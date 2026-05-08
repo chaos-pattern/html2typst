@@ -13,7 +13,7 @@ fn test_several_paragraphs() {
         typ,
         r#"asset afectado 1
 
-asset afectado 2\
+asset afectado 2 \
 asset afectado 3"#
     );
 }

@@ -59,9 +59,9 @@ fn walk(node: &Handle, ctx: &mut Context) {
                     todo!("{tag_name}")
                 }
                 "div" | "section" | "header" | "footer" => {
-                    ctx.output.push_str(" \\ \n");
+                    ctx.output.push_str(" \\\n");
                     walk_descendants(node, ctx, Some(Box::from(tag_name)));
-                    ctx.output.push_str(" \\ \n");
+                    ctx.output.push_str(" \\\n");
                 }
                 "li" => {
                     let mut tag_iter = ctx.tag_stack.iter().rev().filter_map(|t| {
@@ -113,11 +113,12 @@ fn walk(node: &Handle, ctx: &mut Context) {
                     };
                     // TODO: extra newline if not inside a list
                     walk_descendants(node, ctx, Some(Box::from(tag_name)));
-                    ctx.output.push_str(" \\ \n");
+                    ctx.output.push('\n');
+                    // ctx.output.push_str(" \\\n");
                 }
                 "s" | "del" => {
                     // TODO: handle spaces
-                    ctx.output.push_str("#strike[");
+                    ctx.output.push_str(" #strike[");
                     walk_descendants(node, ctx, Some(Box::from(tag_name)));
                     ctx.output.push(']');
                 }
@@ -129,20 +130,20 @@ fn walk(node: &Handle, ctx: &mut Context) {
                 }
                 "i" | "em" => {
                     // TODO: handle spaces
-                    ctx.output.push('_');
+                    ctx.output.push_str(" _");
                     walk_descendants(node, ctx, Some(Box::from(tag_name)));
-                    ctx.output.push('_');
+                    ctx.output.push_str("_ ");
                 }
                 "u" | "ins" => {
                     // TODO: handle spaces
-                    ctx.output.push_str("#underline[");
+                    ctx.output.push_str(" #underline[");
                     walk_descendants(node, ctx, Some(Box::from(tag_name)));
                     ctx.output.push(']');
                 }
                 "blockquote" => {
-                    ctx.output.push_str(" \\ \n#quote(block: true)[\n");
+                    ctx.output.push_str("\n\n#quote(block: true)[\n");
                     walk_descendants(node, ctx, Some(Box::from(tag_name)));
-                    ctx.output.push_str("\n] \\ \n");
+                    ctx.output.push_str("\n]\n\n");
                 }
                 level @ ("h1" | "h2" | "h3" | "h4" | "h5" | "h6") => {
                     let level = usize::from(level.as_bytes()[1] - b'0');
@@ -162,9 +163,9 @@ fn walk(node: &Handle, ctx: &mut Context) {
                 "html" | "head" | "body" => walk_descendants(node, ctx, Some(Box::from(tag_name))),
                 "p" => {
                     walk_descendants(node, ctx, Some(Box::from(tag_name)));
-                    ctx.output.push_str(" \\ \n");
+                    ctx.output.push_str("\n\n");
                 }
-                "br" => ctx.output.push_str(" \\ \n"),
+                "br" => ctx.output.push_str(" \\\n"),
                 "a" => {
                     if let Some(href) = get_attr_value(&attrs.borrow(), "href") {
                         ctx.output
